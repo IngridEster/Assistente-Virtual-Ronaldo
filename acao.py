@@ -89,21 +89,29 @@ def identificar(input):
 
     # estava aqui
     ### pegar variaveis
+    startIndexOfTerm = -1
+    endIndexOfTerm = -1
     if out['app']:
         if 'variables' in listApps[out['app']].keys():
             found = False
             for letter in input:
                 out['phrase'] += letter
+                if len(out['phrase']) == len(input):
+                    endIndexOfTerm = len(input)
                 for variable in listApps[out['app']]['variables'].keys():
-                    if term in out['phrase']:
-                        found = True
+                    for term in listApps[out['app']]['variables'][variable].split(','):
+                        if term in out['phrase']:
+                            if startIndexOfTerm != -1 and endIndexOfTerm != -1:
+                                out['variables'][variable] = out['phrase'][startIndexOfTerm:endIndexOfTerm]
+                                startIndexOfTerm = -1
+                                endIndexOfTerm = -1
+                                found = True
+                            elif startIndexOfTerm == -1:
+                                startIndexOfTerm = len(out['phrase'])
+                    if found:
                         break
                 if found:
                     break
-            if found:
-                out['success'] = True
-                out['app'] = app
-                input = input[len(out['phrase']):]
 
     return out
 
