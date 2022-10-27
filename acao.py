@@ -6,7 +6,7 @@ def identificar(input):
     {abrir, executar, rodar, instânciar} {chrome, excel, vs code}
     """
 
-    listAcoes = ['abrir', 'executar', 'rodar', 'instânciar', 'instanciar']
+    listAcoes = ['abrir', 'executar', 'rodar', 'instânciar', 'instanciar', 'adicionar']
     listApps = {
         'vscode': {
             'terms': 'vscode,visual studio code,vs code,code',
@@ -17,17 +17,29 @@ def identificar(input):
             'terms': 'chrome,google chrome',
             'variables': {'url': 'url:,url,site:,site'},
         },
-        'pesquisarGoogle': {
-            'terms': 'pesquisar,buscar,pesquisa,busca,busque,procure,procura',
-            'variables': {'search': 'busca'},
-        },
         'previsao': {
             'terms': 'previsão do tempo,previsão,previsao,previsao do tempo,previsão tempo,previsao tempo,clima,temperatura,tempo',
-            'variables': {'city': 'cidade:,cidade'},
+            'variables': {
+                'city': 'para a cidade,pra cidade,na cidade,cidade:,cidade,para'
+            },
         },
         'cotação': {
             'terms': 'cotação,cotacao,cotaçao,cotacão',
             'variables': {'currency': 'moeda:,moeda'},
+        },
+        'lembrete': {
+            'terms': 'lembr',
+            'variables': {'text': 'ete'},
+        },
+        'tradutor': {
+            'terms': 'trad',
+            'variables': {
+                'text': 'uza o paragrafo,uza o parágrafo,uza o texto,uza texto,uzir o texto,uzir texto,uzir,uza'
+            },
+        },
+        'pesquisarGoogle': {
+            'terms': 'pesqui,busc,proc,busq',
+            'variables': {'search': 'sar por,por,sar,ar,sa,a,ar,ue,ure,ura'},
         },
     }
 

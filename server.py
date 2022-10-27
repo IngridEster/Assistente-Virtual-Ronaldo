@@ -1,5 +1,5 @@
 import logging
-from tkinter import Button, Label, Tk
+from tkinter import END, Button, Entry, Label, Tk, Frame, BOTTOM
 
 import speech_recognition as sr
 
@@ -7,12 +7,13 @@ import acao
 import saudacao
 import utils
 
+logging.basicConfig(level='INFO')
+
 # initialize the recognizer
 r = sr.Recognizer()
 
 
 def start_recording():
-    logging.info('botão clicado')
     with sr.Microphone() as source:
         audio_data = r.listen(source)
         input = r.recognize_google(audio_data, language='pt-BR')
@@ -54,9 +55,53 @@ def start_recording():
                     utils.speak(
                         'Ocorreu algum problema ao abrir Google Chrome'
                     )
-            # elif response['app'] == 'pesquisarGoogle':
-
-            # elif response['app'] == 'previsao':
+            elif response['app'] == 'pesquisarGoogle':
+                search = ''
+                if 'search' in response['variables'].keys():
+                    search = response['variables']['search']
+                response = utils.pesquisaNoGoogle(search=search)
+                if response:
+                    logging.info(response)
+                    responseText = None
+                    if 'itemListElement' in response.keys():
+                        if len(response['itemListElement']) > 0:
+                            responseText = response['itemListElement'][0][
+                                'result'
+                            ]['detailedDescription']['articleBody']
+                    if responseText:
+                        utils.speak(responseText)
+                    else:
+                        utils.speak(
+                            'Ocorreu algum problema na pesquisa por {}'.format(
+                                search
+                            )
+                        )
+                else:
+                    utils.speak(
+                        'Ocorreu algum problema na pesquisa por {}'.format(
+                            search
+                        )
+                    )
+            elif response['app'] == 'previsao':
+                city = None
+                if 'city' in response['variables'].keys():
+                    city = response['variables']['city']
+                response = utils.pegarPrevisao(city_name=city)
+                logging.info(response)
+                if response:
+                    utils.speak(
+                        'Previsão do tempo para {} é de {} com aproximadamente {} graus'.format(
+                            response['city_name'],
+                            response['description'],
+                            response['temp'],
+                        )
+                    )
+                else:
+                    utils.speak(
+                        'Ocorreu algum problema na procura por previsão do tempo da cidade {}'.format(
+                            city
+                        )
+                    )
             elif response['app'] == 'cotação':
                 response = utils.pegarCotação()
                 utils.speak(
@@ -64,44 +109,55 @@ def start_recording():
                         response
                     )
                 )
-
-        # if 'previsão' in input:
-        #     output = utils.pegarPrevisao(input)
-        #     print(output)
-        #     tts = gTTS(output['description'], lang='pt-br')
-        #     tts.save("output.mp3")
-        #     playsound("output.mp3")
-        # elif 'chrome' in input:
-        #     utils.abrirChrome()
-        # elif 'visual studio code' in input:
-        #     utils.abrirVSCode()
-        # elif 'excel' in input:
-        #     utils.abrirExcel()
-        # elif 'word' in input:
-        #     utils.abrirWord()
-        # elif 'cotação' in input:
-        #     utils.pegarCotação()
-        # elif 'google' in input:
-        #     utils.pesquisaNoGoogle(input)
-    """ print('botão clicado')
-    with sr.Microphone() as source:
-    # listen for the data (load audio to memory)
-        audio_data = r.listen(source)
-    # recognize (convert from speech to text)
-        text = r.recognize_google(audio_data, language='pt-BR')
-        myobj = {'input': text}
-        print(type(text).__name__)
-        if 'previsão' in text:
-            x = requests.post(url_previsao, myobj)
-            print(x) """
+            elif response['app'] == 'tradutor':
+                text = None
+                if 'text' in response['variables'].keys():
+                    text = response['variables']['text']
+                if text:
+                    response = utils.translate(text=text)
+                    utils.speak(response, lang='en')
+                else:
+                    utils.speak(
+                        'Ocorreu algum problema na hora de identificar o texto a traduzir de {}'.format(
+                            text
+                        )
+                    )
+            elif response['app'] == 'lembrete':
+                text = None
+                if 'text' in response['variables'].keys():
+                    text = response['variables']['text']
+                if text:
+                    global lembretes_quantity
+                    lembretes_quantity += 1
+                    entry = Entry(frame)
+                    entry.grid(row=lembretes_quantity, column=1)
+                    entry.insert(END, '{} - {}'.format(lembretes_quantity - 1, text))
+                    utils.speak(
+                        'Adicionado lembrete {}'.format(
+                            text
+                        )
+                    )
+                else:
+                    utils.speak(
+                        'Ocorreu algum problema na hora de adicionar o lembrete {}'.format(
+                            text
+                        )
+                    )
 
 
 janela = Tk()
 
-texto = Label(text='Live de Python')
+texto = Label(text='Clique no botão a baixo e fale com o Ronaldo')
 texto.pack()
 
-botao = Button(text='clique aqui', command=start_recording)
+botao = Button(text='Iniciar gravação!', command=start_recording)
 botao.pack()
 
+frame = Frame(janela)
+entry = Entry(frame)
+entry.grid(row=1, column=1)
+entry.insert(END, 'Lembretes')
+frame.pack()
+lembretes_quantity = 1
+janela.title('Ronaldo - Assistente virtual')
 janela.mainloop()

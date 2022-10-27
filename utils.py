@@ -4,6 +4,7 @@ import os
 import subprocess
 
 import requests
+from googletrans import Translator
 from gtts import gTTS
 from playsound import playsound
 
@@ -96,17 +97,25 @@ def pesquisaNoGoogle(search: str = ''):
             'key': open('.google_api_key').read(),
             'query': search,
             'limit': 1,
+            'languages': 'pt',
         }
         response = requests.get(
             'https://kgsearch.googleapis.com/v1/entities:search', params=params
         )
         return response.json()
+    else:
+        return None
 
 
-def speak(text: str):
+def translate(text: str = None):
+    translator = Translator()
+    return (translator.translate(text, src='pt', dest='en')).text
+
+
+def speak(text: str, lang: str = 'pt'):
     date_string = datetime.datetime.now().strftime('%d%m%Y%H%M%S')
     filename = 'voice' + date_string + '.mp3'
-    tts = gTTS(text, lang='pt-br')
+    tts = gTTS(text, lang=lang)
     tts.save(filename)
     playsound(filename)
     os.remove(filename)
@@ -123,3 +132,4 @@ if __name__ == '__main__':
     logging.debug(pegarPrevisao('Schroeder,SC'))
     logging.debug(pegarCotação())
     logging.debug(pesquisaNoGoogle('teste'))
+    print(translate('teste'))

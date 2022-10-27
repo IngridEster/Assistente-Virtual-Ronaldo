@@ -1,5 +1,5 @@
 # Assistente-Virtual-Ronaldo
-Aplicação frontend responsável em pegar o input do usuário e fazer as ações. 
+Aplicação responsável em pegar o input do usuário e executar as ações.
 
 # Requisitos
 1. Ter o python versão >= 3.11
@@ -31,3 +31,34 @@ pip install -r requirements.txt
 ```
 python server.py
 ```
+
+# Utilização
+O ronaldo entende frases formatadas seguindo um padrão conforme descrito abaixo:
+```
+{
+   'olá', 'ola', 'oi', 'ok', 'eae'
+}
+   ronaldo
+{
+   'abrir', 'executar', 'rodar', 'instânciar', 'instanciar', 'adicionar'
+}
+{
+   vscode, visual studio code, vs code, code
+   word, microsoft word, office word
+   excel, microsoft excel, office excel
+   chrome, google chrome
+   previsão do tempo, previsão, previsao, previsao do tempo, previsão tempo, previsao tempo, clima, temperatura, tempo
+   cotação, cotacao, cotaçao, cotacão
+   lembrete
+   traduzir
+   pesquisar, buscar, procurar, busque
+}
+```
+O ronaldo consegue responder frases como as dos exemplos abaixo:
+ - Ok ronaldo cotação
+ - Ok ronaldo adicionar lembrete ir ao mercado
+ - Olá ronaldo abrir chrome
+ - Olá ronaldo previsão do tempo para jaraguá do sul
+ - Olá ronaldo traduzir eu fui ao mercado
+ - Ronaldo abrir vscode
+ - Oi ronaldo pesquisar por Elvis Presley
