@@ -1,3 +1,6 @@
+import logging
+
+
 def identificar(input):
     """
     {abrir, executar, rodar, instânciar} {chrome, excel, vs code}
@@ -8,44 +11,32 @@ def identificar(input):
         'vscode': {
             'terms': 'vscode,visual studio code,vs code,code',
         },
-        'word': {
-            'terms': 'word,microsoft word,office word'
-        },
-        'excel': {
-            'terms': 'excel,microsoft excel,office excel'
-        },
+        'word': {'terms': 'word,microsoft word,office word'},
+        'excel': {'terms': 'excel,microsoft excel,office excel'},
         'chrome': {
             'terms': 'chrome,google chrome',
-            'variables': {
-                'url': 'url:,url,site:,site'
-            }
+            'variables': {'url': 'url:,url,site:,site'},
         },
         'pesquisarGoogle': {
             'terms': 'pesquisar,buscar,pesquisa,busca,busque,procure,procura',
-            'variables': {
-                'search': 'busca'
-            }
+            'variables': {'search': 'busca'},
         },
         'previsao': {
             'terms': 'previsão do tempo,previsão,previsao,previsao do tempo,previsão tempo,previsao tempo,clima,temperatura,tempo',
-            'variables': {
-                'city': 'cidade:,cidade'
-            }
+            'variables': {'city': 'cidade:,cidade'},
         },
         'cotação': {
             'terms': 'cotação,cotacao,cotaçao,cotacão',
-            'variables': {
-                'currency': 'moeda:,moeda'
-            }
-        }
+            'variables': {'currency': 'moeda:,moeda'},
+        },
     }
 
-    out ={
+    out = {
         'success': False,
         'phrase': '',
         'action': '',
         'app': None,
-        'variables': {}
+        'variables': {},
     }
     ### pegar ação (será desconsiderada)
     found = False
@@ -58,12 +49,11 @@ def identificar(input):
         if found:
             break
     if found:
-        out['action'] = input[:len(out['phrase'])]
-        input = input[len(out['phrase']):]
-    
+        out['action'] = input[: len(out['phrase'])]
+        input = input[len(out['phrase']) :]
+
     out['phrase'] = ''
-    
-    
+
     ### pegar aplicativo
     found = False
     for letter in input:
@@ -80,14 +70,10 @@ def identificar(input):
     if found:
         out['success'] = True
         out['app'] = app
-        input = input[len(out['phrase']):]
-    
+        input = input[len(out['phrase']) :]
+
     out['phrase'] = ''
 
-
-
-
-    # estava aqui
     ### pegar variaveis
     startIndexOfTerm = -1
     endIndexOfTerm = -1
@@ -99,10 +85,14 @@ def identificar(input):
                 if len(out['phrase']) == len(input):
                     endIndexOfTerm = len(input)
                 for variable in listApps[out['app']]['variables'].keys():
-                    for term in listApps[out['app']]['variables'][variable].split(','):
+                    for term in listApps[out['app']]['variables'][
+                        variable
+                    ].split(','):
                         if term in out['phrase']:
                             if startIndexOfTerm != -1 and endIndexOfTerm != -1:
-                                out['variables'][variable] = out['phrase'][startIndexOfTerm:endIndexOfTerm]
+                                out['variables'][variable] = out['phrase'][
+                                    startIndexOfTerm:endIndexOfTerm
+                                ]
                                 startIndexOfTerm = -1
                                 endIndexOfTerm = -1
                                 found = True
@@ -113,7 +103,12 @@ def identificar(input):
                 if found:
                     break
 
+    del out['phrase']
+
     return out
 
+
 if __name__ == '__main__':
-    print(identificar('abrir chrome site bradesco.com'))
+    logging.debug(identificar('abrir chrome bradesco.com'))
+    logging.debug(identificar('abrir chrome site bradesco.com'))
+    logging.debug(identificar('abrir vscode site bradesco.com'))

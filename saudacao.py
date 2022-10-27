@@ -1,4 +1,7 @@
+import logging
+
 NOME_DO_AGENTE = 'ronaldo'
+
 
 def identificar(input):
     """
@@ -12,10 +15,7 @@ def identificar(input):
 
     listSaudacoes = ['olá', 'ola', 'oi', 'ok', 'eae']
 
-    out ={
-        'success': False,
-        'phrase': ''
-    }
+    out = {'success': False, 'phrase': ''}
     found = False
     for letter in input:
         out['phrase'] += letter
@@ -30,9 +30,10 @@ def identificar(input):
             break
     if found:
         out['success'] = True
-        out['input'] = input[len(out['phrase']):]
+        out['input'] = input[len(out['phrase']) :]
 
     return out
 
+
 if __name__ == '__main__':
-    print(identificar('olá'))
+    logging.debug(identificar('olá'))

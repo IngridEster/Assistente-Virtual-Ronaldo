@@ -1,45 +1,79 @@
+import datetime
+import logging
+import os
 import subprocess
-from urllib import response
+
 import requests
+from gtts import gTTS
+from playsound import playsound
+
 
 def abrirChrome(url: str = 'https://www.google.com/'):
-    subprocess.Popen(
-        [
-        'C:\Program Files\Google\Chrome\Application\chrome.exe',
-        url
-        ]
-    )
+    pathsChrome = [
+        r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+        r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+    ]
+    pathChrome = None
+    for path in pathsChrome:
+        if os.path.exists(path):
+            pathChrome = path
+            break
+    if pathChrome:
+        subprocess.Popen([pathChrome, url])
+        return True
+    else:
+        return False
+
 
 def abrirVSCode(dest: str = '.'):
     subprocess.Popen(
         [
-        r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe',
-        '-c',
-        'code',
-        dest
+            r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe',
+            '-c',
+            'code',
+            dest,
         ]
     )
+
 
 def abrirExcel(file: str = ''):
-    subprocess.Popen(
-        [
+    pathsExcel = [
         r'C:\Program Files (x86)\Microsoft Office\Office16\EXCEL.EXE',
-        file
-        ]
-    )
+        r'C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE',
+    ]
+    pathExcel = None
+    for path in pathsExcel:
+        if os.path.exists(path):
+            pathExcel = path
+            break
+    if pathExcel:
+        subprocess.Popen([pathExcel, file])
+        return True
+    else:
+        return False
+
 
 def abrirWord(file: str = ''):
-    subprocess.Popen(
-        [
+    pathsWord = [
         r'C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE',
-        file
-        ]
-    )
+        r'C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE',
+    ]
+    pathWord = None
+    for path in pathsWord:
+        if os.path.exists(path):
+            pathWord = path
+            break
+    if pathWord:
+        subprocess.Popen([pathWord, file])
+        return True
+    else:
+        return False
+
 
 def pegarPrevisao(city_name: str = None):
     params = {
         'key': open('.hgbrasil_api_key').read(),
-        'fields': 'temp,city_name,description'
+        'fields': 'temp,city_name,description',
     }
     if city_name:
         params['city_name'] = city_name
@@ -48,28 +82,44 @@ def pegarPrevisao(city_name: str = None):
     response = requests.get('https://api.hgbrasil.com/weather', params=params)
     return response.json()['results']
 
+
 def pegarCotação():
-    response = requests.get('https://economia.awesomeapi.com.br/json/USD-BRL/1')
+    response = requests.get(
+        'https://economia.awesomeapi.com.br/json/USD-BRL/1'
+    )
     return response.json()[0]['bid']
 
-def pesquisaNoGoogle(search : str = ''):
+
+def pesquisaNoGoogle(search: str = ''):
     if search.strip() != '':
         params = {
             'key': open('.google_api_key').read(),
             'query': search,
-            'limit': 1
+            'limit': 1,
         }
-        response = requests.get('https://kgsearch.googleapis.com/v1/entities:search', params=params)
+        response = requests.get(
+            'https://kgsearch.googleapis.com/v1/entities:search', params=params
+        )
         return response.json()
 
-if __name__ == '__main__':
-    # abrirChrome('https://www.google.com/search?q=Teste aqui')
-    # abrirVSCode(r"C:\Users\johan.kneubuhler\Desktop")
-    # abrirExcel(r'C:\Users\johan.kneubuhler\Downloads\frutas.csv')
-    # abrirWord(r'C:\Users\johan.kneubuhler\Downloads\teste.docx')
 
-    # pegarPrevisao('Jaraguá do Sul,SC')
-    # pegarPrevisao('Massaranduba,SC')
-    # print(pegarPrevisao('Schroeder,SC'))
-    # print(pegarCotação())
-    print(pesquisaNoGoogle('teste'))
+def speak(text: str):
+    date_string = datetime.datetime.now().strftime('%d%m%Y%H%M%S')
+    filename = 'voice' + date_string + '.mp3'
+    tts = gTTS(text, lang='pt-br')
+    tts.save(filename)
+    playsound(filename)
+    os.remove(filename)
+
+
+if __name__ == '__main__':
+    abrirChrome('https://www.google.com/search?q=Teste aqui')
+    abrirVSCode(r'C:\Users\johan.kneubuhler\Desktop')
+    abrirExcel(r'C:\Users\johan.kneubuhler\Downloads\frutas.csv')
+    abrirWord(r'C:\Users\johan.kneubuhler\Downloads\teste.docx')
+
+    pegarPrevisao('Jaraguá do Sul,SC')
+    pegarPrevisao('Massaranduba,SC')
+    logging.debug(pegarPrevisao('Schroeder,SC'))
+    logging.debug(pegarCotação())
+    logging.debug(pesquisaNoGoogle('teste'))
